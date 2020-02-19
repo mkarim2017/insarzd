@@ -17,7 +17,7 @@ COPY . /home/ops/verdi/ops/insarzd
 RUN set -ex \
  && sudo /usr/bin/pip3 install joblib netcdf4 \
  && sudo rm -rf /root/.cache \
- && sudo chown -R ops:ops /home/ops/verdi/ops/insarzd \
+ && sudo chown -R ops:ops /home/ops/verdi/ops/insarzd 
  #&& mv /home/ops/verdi/ops/insarzd/spyddder-man /home/ops/verdi/ops/ \
  #&& mv /home/ops/verdi/ops/insarzd/slcp2pm /home/ops/verdi/ops/ \
  #&& mv /home/ops/verdi/ops/insarzd/slcp2cor /home/ops/verdi/ops/ \
