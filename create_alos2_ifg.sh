@@ -20,6 +20,7 @@ echo "##########################################" 1>&2
 echo -n "Running ALOS2 interferogram generation : " 1>&2
 date 1>&2
 python3 $BASE_PATH/create_alos2_ifg.py > create_alos2_ifg.log 2>&1
+#python3 $BASE_PATH/test.py > test.log 2>&1
 STATUS=$?
 echo -n "Finished running ALOS2 interferogram generation: " 1>&2
 date 1>&2
