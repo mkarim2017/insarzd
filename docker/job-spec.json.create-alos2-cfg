@@ -1,9 +1,9 @@
 {
-  "command": "/home/ops/ariamh/interferogram/sentinel/create_standard_product_s1.sh",
+  "command": "/home/ops/verdi/ops/insarzd/create_alos2_ifg.sh",
   "imported_worker_files": {
     "/home/ops/.netrc": ["/home/ops/.netrc"],
     "/home/ops/.aws": ["/home/ops/.aws", "ro"],
-    "/home/ops/verdi/etc/settings.conf": "/home/ops/ariamh/conf/settings.conf"
+    "/home/ops/verdi/etc/settings.conf": "/home/ops/verdi/ops/insarzd/settings.conf"
   },
   "disk_usage":"200GB",
    "dependency_images": [
@@ -23,29 +23,18 @@
   "time_limit": 7500,
   "post": [ "hysds.utils.triage" ],
   "params" : [
-    {
-      "name": "dataset_tag",
-      "destination": "context"
+    { 
+      "name": "reference_product",
+      "destination": "positional"
     },
     {
-      "name": "input_metadata",
-      "destination": "context"
+      "name": "secondary_product",
+      "destination": "positional"
     },
     {
-      "name":"localize_products",
-      "destination":"localize"
+      "name": "SNWE",
+      "destination": "positional"
     },
-    {
-      "name": "query",
-      "destination": "context"
-    },
-    {
-      "name": "name",
-      "destination": "context"
-    },
-    {
-      "name": "username",
-      "destination": "context"
-    }
+    { "name": "localize_url", "destination": "localize" }
   ]
 }

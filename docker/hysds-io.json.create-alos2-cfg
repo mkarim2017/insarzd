@@ -5,32 +5,23 @@
   "enable_dedup": false,
   "params" : [
     { 
-      "name": "dataset_tag",
+      "name": "reference_product",
       "from": "submitter",
-      "type": "text",
-      "default": "standard_product",
-      "placeholder": "A value to append to the dataset identifier"
+      "type": "text"
     },
     {
-      "name": "input_metadata",
-      "type": "text",
-      "from": "dataset_jpath:_source.metadata"
+      "name": "secondary_product",
+      "from": "submitter",
+      "type": "text"
     },
     {
-     "name":"localize_products",
-     "from": "dataset_jpath:_source.metadata.localize_urls"
+      "name": "SNWE",
+      "from": "submitter",
+      "type": "text"
     },
-    { 
-      "name": "query",
-      "from": "passthrough"
-    },
-    { 
-      "name": "name",
-      "from": "passthrough"
-    },
-    { 
-      "name": "username",
-      "from": "passthrough"
+   {
+      "name": "localize_url",
+      "from": "submitter"
     }
   ]
 }
