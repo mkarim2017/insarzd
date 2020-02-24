@@ -7,6 +7,8 @@ from subprocess import check_call, CalledProcessError
 from datetime import datetime
 import xml.etree.cElementTree as ET
 from xml.etree.ElementTree import Element, SubElement
+from zipfile import ZipFile
+from create_input_xml import create_input_xml
 
 log_format = "[%(asctime)s: %(levelname)s/%(funcName)s] %(message)s"
 logging.basicConfig(format=log_format, level=logging.INFO)
@@ -111,9 +113,20 @@ def download_dem(SNWE):
     cmd_line = " ".join(cmd)
     check_call(cmd_line, shell=True)
 
+    return dem_xml_file_1, dem_xml_file_3
+
+def unzip_slcs(slcs):
+    for k, v in slcs.items():
+        print("Unzipping {} in {}".format(v, k))
+        with ZipFile(v, 'r') as zf:
+            zf.extractall(k)
+        print("Removing {}.".format(v))
+        #try: os.unlink(v)
+        #except: pass
 
 def main():
 
+    wd = os.getcwd()
     min_lon = 119.25384521484376
     max_lon = 120.58868408203126
     min_lat = -1.2749954674414934
@@ -121,8 +134,29 @@ def main():
 
     SNWE = get_SNWE(min_lon, max_lon, min_lat, max_lat)
     print(SNWE)
-    download_dem(SNWE)
+    dem_xml_file_1, dem_xml_file_3 = download_dem(SNWE)
    
+    slcs = {"reference" : "0000230036_001001_ALOS2227337160-180808.zip", "secondary" : "0000230039_001001_ALOS2235617160-181003.zip"}
+    unzip_slcs(slcs)
+
+    xml_file = "alos2app_scansar-stripmap.xml"
+    tmpl_file = "alos2app_scansar-stripmap.xml.tmpl"
+    ref_data_dir = os.path.join(wd, "reference")
+    sec_data_dir = os.path.join(wd, "secondary")
+    dem_file = dem_xml_file_1
+    geocoded_dem_file = dem_xml_file_3
+    start_subswath = 1
+    end_subswath = 5
+    burst_overlap = 85.0
+    
+
+    create_input_xml(os.path.join(BASE_PATH, tmpl_file), xml_file,
+                     str(ref_data_dir), str(sec_data_dir),
+                     dem_file, geocoded_dem_file,
+                     start_subswath, end_subswath, burst_overlap)
+
+    
+
 
 if __name__ == '__main__':
     complete_start_time=datetime.now()
