@@ -133,6 +133,17 @@ def unzip_slcs(slcs):
 def main():
 
     wd = os.getcwd()
+    
+    new_dir= "{}/src".format(BASE_PATH)
+    print(new_dir)
+    os.chdir(new_dir)
+    cmd = "./install.sh"
+    os.system(cmd)
+
+    os.chdir(wd)
+    cmd= ["pwd"]
+    run_command(cmd)
+
     min_lon = 119.25384521484376
     max_lon = 120.58868408203126
     min_lat = -1.2749954674414934
@@ -149,8 +160,8 @@ def main():
     tmpl_file = "alos2app_scansar-stripmap.xml.tmpl"
     ref_data_dir = os.path.join(wd, "reference")
     sec_data_dir = os.path.join(wd, "secondary")
-    dem_file = dem_xml_file_1
-    geocoded_dem_file = dem_xml_file_3
+    dem_file = os.path.split(dem_xml_file_1)[0]
+    geocoded_dem_file = os.path.split(dem_xml_file_3)[0]
     start_subswath = 1
     end_subswath = 5
     burst_overlap = 85.0
