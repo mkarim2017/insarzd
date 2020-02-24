@@ -51,6 +51,12 @@ def get_SNWE(min_lon, max_lon, min_lat, max_lat):
 
     return "{} {} {} {}".format(dem_S, dem_N, dem_W, dem_E)
 
+def run_command(cmd):
+    cmd_line = " ".join(cmd)
+    print("calling : {}".format(cmd_line))
+    check_call(cmd_line, shell=True)
+
+
 def download_dem(SNWE):
     uu = UrlUtils()
     dem_user = uu.dem_u
@@ -149,13 +155,24 @@ def main():
     end_subswath = 5
     burst_overlap = 85.0
     
-
     create_input_xml(os.path.join(BASE_PATH, tmpl_file), xml_file,
                      str(ref_data_dir), str(sec_data_dir),
-                     dem_file, geocoded_dem_file,
-                     start_subswath, end_subswath, burst_overlap)
+                     str(dem_file), str(geocoded_dem_file), start_subswath, end_subswath, burst_overlap)
 
-    
+
+    alos2_start_time=datetime.now()
+    logger.info("ALOS2 Start Time : {}".format(alos2_start_time)) 
+
+    cmd = ["python3", "{}/scripts/alos2app.py".format(BASE_PATH), "-i", "{}".format(xml_file), "-e", "coherence"]
+    run_command(cmd)
+
+    cmd = ["python3", "{}/scripts/ion.py".format(BASE_PATH), "-i", "{}".format(xml_file)]
+    run_command(cmd)
+
+    cmd = ["python3", "{}/scripts/alos2app.py".format(BASE_PATH), "-i", "{}".format(xml_file), "-s", "filter"]
+    run_command(cmd)
+
+
 
 
 if __name__ == '__main__':

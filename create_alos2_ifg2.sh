@@ -3,16 +3,19 @@ BASE_PATH=$(dirname "${BASH_SOURCE}")
 BASE_PATH=$(cd "${BASE_PATH}"; pwd)
 
 # source ISCE env
-export PYTHONPATH=/usr/local/isce:$PYTHONPATH
-export ISCE_HOME=/usr/local/isce/isce
+export GMT_HOME=/usr/local/gmt
 export INSARZD_HOME=$HOME/verdi/ops/insarzd
-export PATH=$ISCE_HOME/applications:$ISCE_HOME/bin:/usr/local/gdal/bin:$PATH
-export LD_LIBRARY_PATH=/usr/local/gdal/lib:$LD_LIBRARY_PATH
-export GDAL_DATA=/usr/local/gdal/share/gdal
-export PYTHONPATH=$HOME/verdi/ops/insarzd/scripts/pac:$PYTHONPATH
-export INSAR_ZERODOP_SCR=$HOME/verdi/ops/insarzd/scripts
-export INSAR_ZERODOP_BIN=$HOME/verdi/ops/insarzd/bin
+export INSAR_ZERODOP_SCR=$INSARZD_HOME/scripts
+source $INSARZD_HOME/isce.sh
+source $INSARZD_HOME/giant.sh
+export TROPMAP_HOME=$HOME/tropmap
+export UTILS_HOME=$INSARZD_HOME/utils
+export GIANT_HOME=/usr/local/giant/GIAnT
+export PYTHONPATH=.:$ISCE_HOME/applications:$ISCE_HOME/components:$BASE_PATH:$INSARZD_HOME:$TROPMAP_HOME:$GIANT_HOME:$PYTHONPATH
+export PYTHONPATH=$INSAR_ZERODOP_SCR/pac:$PYTHONPATH
+export INSAR_ZERODOP_BIN=$INSARZD_HOME/bin
 export PATH=$INSAR_ZERODOP_SCR:$INSAR_ZERODOP_BIN:$PATH
+#export PATH=$BASE_PATH:$TROPMAP_HOME:$GMT_HOME/bin:$PATH
 
 # source environment
 source $HOME/verdi/bin/activate

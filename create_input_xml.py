@@ -4,7 +4,7 @@ from string import Template
 
 
 def create_input_xml(tmpl_file, xml_file, reference_data_dir, secondary_data_dir,
-                     dem_file, geocoded_dem_file,  start_swathnum, end_swathnum, azimuth_looks, burst_overlap):
+                     dem_file, geocoded_dem_file,  start_swathnum, end_swathnum, burst_overlap):
     with open(tmpl_file) as f:
         tmpl = Template(f.read())
     with open(xml_file, 'w') as f:
@@ -29,6 +29,8 @@ def main():
     start_swathnum = sys.argv[7]
     end_swathnum = sys.argv[8]
     burst_overlap = sys.argv[9]
+    print(end_swathnum)
+    print(tmpl_file)
     '''
     azimuth_looks = sys.argv[11]
     range_looks = sys.argv[12]
