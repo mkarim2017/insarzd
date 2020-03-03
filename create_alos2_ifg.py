@@ -160,8 +160,8 @@ def main():
     tmpl_file = "alos2app_scansar-stripmap.xml.tmpl"
     ref_data_dir = os.path.join(wd, "reference")
     sec_data_dir = os.path.join(wd, "secondary")
-    dem_file = os.path.split(dem_xml_file_1)[0]
-    geocoded_dem_file = os.path.split(dem_xml_file_3)[0]
+    dem_file = os.path.splitext(dem_xml_file_1)[0]
+    geocoded_dem_file = os.path.splitext(dem_xml_file_3)[0]
     start_subswath = 1
     end_subswath = 5
     burst_overlap = 85.0
