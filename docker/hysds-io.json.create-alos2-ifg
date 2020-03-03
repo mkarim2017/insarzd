@@ -19,7 +19,14 @@
       "from": "submitter",
       "type": "text"
     },
-   {
+    {
+      "name": "ifg_type",
+      "from": "submitter",
+      "type": "enum",
+      "default": "stripmap",
+      "enumerables": ["stripmap", "scansar", "scansar-stripmap"]
+    },
+    {
       "name": "localize_url",
       "from": "submitter"
     }
