@@ -13,18 +13,11 @@ USER ops
 
 
 # copy insarzd code ensure proper permissions, and move dependencies to final locations
-COPY . /home/ops/verdi/ops/insarzd
+COPY . /home/ops/insarzd
 RUN set -ex \
  && sudo /usr/bin/pip3 install joblib netcdf4 \
  && sudo rm -rf /root/.cache \
- && sudo chown -R ops:ops /home/ops/verdi/ops/insarzd 
- #&& mv /home/ops/verdi/ops/insarzd/spyddder-man /home/ops/verdi/ops/ \
- #&& mv /home/ops/verdi/ops/insarzd/slcp2pm /home/ops/verdi/ops/ \
- #&& mv /home/ops/verdi/ops/insarzd/slcp2cor /home/ops/verdi/ops/ \
- #&& cd /home/ops/verdi/ops/slcp2pm/src \
- #&& ./compile.sh \
- #&& cd /home/ops/verdi/ops/slcp2cor/src \
- #&& ./compile.sh
+ && sudo chown -R ops:ops /home/ops/insarzd 
 
 # set entrypoint
 WORKDIR /home/ops
