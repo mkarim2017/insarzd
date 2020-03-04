@@ -35,10 +35,6 @@
       "name": "SNWE",
       "destination": "positional"
     },
-    {
-      "name": "ifg_type",
-      "destination": "positional"
-    },
     { "name": "localize_url", "destination": "localize" }
   ]
 }
