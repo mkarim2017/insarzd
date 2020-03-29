@@ -145,7 +145,7 @@ def download_dem(SNWE):
 
     dem_url = srtm3_dem_url
     dem_cmd = [
-                "/usr/local/isce/isce/applications/dem.py", "-a",
+                "{}/applications/dem.py".format(os.environ['ISCE_HOME']), "-a",
                 "stitch", "-b", "{}".format(SNWE),
                 "-k", "-s", "1", "-f", "-c", "-n", dem_user, "-w", dem_pass,
                 "-u", dem_url
@@ -177,7 +177,7 @@ def download_dem(SNWE):
 
     # fix file path in Preprocess DEM xml
     fix_cmd = [
-        "/usr/local/isce/isce/applications/fixImageXml.py",
+        "{}/applications/fixImageXml.py".format(os.environ['ISCE_HOME']),
         "-i", preprocess_dem_file, "--full"
     ]
     fix_cmd_line = " ".join(fix_cmd)
@@ -314,6 +314,8 @@ def unzip_slcs(slcs):
 
 def main():
 
+
+    ''' Run the install '''
     wd = os.getcwd()
     
     new_dir= "{}/src".format(BASE_PATH)
@@ -326,6 +328,27 @@ def main():
     cmd= ["pwd"]
     run_command(cmd)
 
+   ''' Get the informations from _context file '''
+   ctx_file = os.path.abspath('_context.json')
+    if not os.path.exists(ctx_file):
+        raise RuntimeError("Failed to find _context.json.")
+    with open(ctx_file) as f:
+        ctx = json.load(f)
+
+    # save cwd (working directory)
+    complete_start_time=datetime.now()
+    logger.info("Alos2 start Time : {}".format(complete_start_time))
+
+   dem_type = ctx['dem_type']
+   reference_slc = ctx['reference_product']
+   secondary_slc = ctx['secondary_product']
+   SNWE = ctx['SNWE']
+
+
+    #logger.info("ctx: {}".format(json.dumps(ctx, indent=2)))
+
+
+
     min_lon = 119.25384521484376
     max_lon = 120.58868408203126
     min_lat = -1.2749954674414934
@@ -337,12 +360,13 @@ def main():
     logging.info("SNWE : {}".format(SNWE))
     dem_xml_file_1, dem_xml_file_3 = download_dem(SNWE)
    
-    exit(0)
+    ''' This is already done, so commenting it for now 
     slcs = {"reference" : "0000230036_001001_ALOS2227337160-180808.zip", "secondary" : "0000230039_001001_ALOS2235617160-181003.zip"}
     unzip_slcs(slcs)
+    '''
 
-    xml_file = "alos2app_scansar-stripmap.xml"
-    tmpl_file = "alos2app_scansar-stripmap.xml.tmpl"
+    xml_file = "alos2app_scansar.xml"
+    tmpl_file = "alos2app_scansar.xml.tmpl"
     ref_data_dir = os.path.join(wd, "reference")
     sec_data_dir = os.path.join(wd, "secondary")
     dem_file = os.path.splitext(dem_xml_file_1)[0]

@@ -25,15 +25,19 @@
   "params" : [
     { 
       "name": "reference_product",
-      "destination": "positional"
+      "destination": "context"
     },
     {
       "name": "secondary_product",
-      "destination": "positional"
+      "destination": "context"
     },
     {
       "name": "SNWE",
-      "destination": "positional"
+      "destination": "context"
+    },
+    {
+      "name": "dem_type",
+      "destination": "context"
     },
     { "name": "localize_url", "destination": "localize" }
   ]

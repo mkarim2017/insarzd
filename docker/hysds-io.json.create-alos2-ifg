@@ -20,6 +20,11 @@
       "type": "text"
     },
     {
+      "name": "dem_type",
+      "from": "submitter",
+      "type": "text"
+    },
+    {
       "name": "localize_url",
       "from": "submitter"
     }
