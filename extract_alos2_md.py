@@ -99,10 +99,11 @@ def create_alos2_md_bos(dir_name, filename):
         m = re.search('IMG-[A-Z]{2}-(ALOS2.{16})-.*', os.path.basename(img_file[0]))
         id = m.group(1)
         params = {'cql_filter': "(identifier='{}')".format(id)}
-
+        print(params)
         r = requests.get(geo_server, params, verify=False)
         r.raise_for_status()
 
+        print(r.json())
         md = r.json()["features"][0]
         md['source'] = "bos_sarcat"
         # move properties a level up

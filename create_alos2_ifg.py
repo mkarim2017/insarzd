@@ -111,6 +111,16 @@ def updateXml(xml_file):
     tree = ET.ElementTree(root)
     tree.write(xml_file) 
 
+def get_SNWE_bbox(bbox):
+    lons = []
+    lats = []
+
+    for pp in bbox:
+        lons.append(pp[0])
+        lats.append(pp[1])
+
+    return get_SNWE(min(lons), max(lons), min(lats), max(lats))
+
 def get_SNWE(min_lon, max_lon, min_lat, max_lat):
     dem_S = min_lat
     dem_N = max_lat
@@ -355,10 +365,12 @@ def main():
     ''' Extrach Reference SLC Metadata'''
     ref_insar_obj = extract_alos2_md.get_alos2_obj(ref_data_dir)
     extract_alos2_md.create_alos2_md_isce(ref_insar_obj, "ref_alos2_md.json")
+    #extract_alos2_md.create_alos2_md_bos(ref_data_dir, "ref_alos2_md2.json")
 
     ''' Extrach Reference SLC Metadata'''
     sec_insar_obj = extract_alos2_md.get_alos2_obj(sec_data_dir)
     extract_alos2_md.create_alos2_md_isce(sec_insar_obj, "sec_alos2_md.json")
+    #extract_alos2_md.create_alos2_md_bos(sec_data_dir, "sec_alos2_md2.json")
 
     with open("ref_alos2_md.json") as f:
         ref_md = json.load(f)
@@ -366,23 +378,9 @@ def main():
     with open("sec_alos2_md.json") as f:
         sec_md = json.load(f)
 
-    ref_bbox = ref_md['bbox']
-    print(ref_bbox)
-
-    sec_bbox = sec_md['bbox']
-    print(ref_bbox)
-
-    #logger.info("ctx: {}".format(json.dumps(ctx, indent=2)))
-
-
-    dem_S, dem_N, dem_W, dem_E = bbox
-    dem_S = int(math.floor(dem_S))
-    dem_N = int(math.ceil(dem_N))
-    dem_W = int(math.floor(dem_W))
-    dem_E = int(math.ceil(dem_E)
-
+    ref_bbox = ref_md['geometry']['coordinates'][0]
+    SNWE = get_SNWE_bbox(ref_bbox)
     #SNWE = "14 25 -109 -91"
-    SNWE = "{} {} {} {}".format(dem_S, dem_N, dem_W, dem_E)
     logging.info("SNWE : {}".format(SNWE))
     dem_xml_file_1, dem_xml_file_3 = download_dem(SNWE)
    

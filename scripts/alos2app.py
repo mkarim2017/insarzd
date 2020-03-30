@@ -84,6 +84,7 @@ def prep_inputfile(insar_arg, fn):
                 if insar_arg.combination == 1:
                     img_s = sorted(glob.glob(insar_arg.slaveDir + "/" + "IMG-{}-ALOS2*{}-*-*".format(insar_arg.slavePolarization, frame_s)))[0]
                 else:
+                    print("{} : {} : {}: {}".format(insar_arg.slaveDir, insar_arg.slavePolarization, frame_s, j))
                     img_s = sorted(glob.glob(insar_arg.slaveDir + "/" + "IMG-{}-ALOS2*{}-*-*-F{}".format(insar_arg.slavePolarization, frame_s, j)))[0]
                 writeSARconfig_ALOS2(fn.slave + '.xml', ldr_s, img_s, fn.slave + '.slc')
 

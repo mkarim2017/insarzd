@@ -268,7 +268,12 @@ def runCmd(cmd, silent=0):
 
     if silent == 0:
         print("{}".format(cmd))
+    if not cmd.strip():
+        print("EMPTY CMD")
+        return
+
     status = os.system(cmd)
+    
     if status != 0:
         raise Exception('error when running:\n{}\n'.format(cmd))
 
@@ -304,6 +309,7 @@ def run_record_cmd(cmd_all, start_step, end_step, cmdfile):
 
     #get absolute directory in order to always write to this file when change directory
     cmdfile = os.path.abspath(cmdfile)
+    print("CMDFILE : {}".format(cmdfile))
 
     #run and record commands
     for i in range(start_step_index, end_step_index+1):
