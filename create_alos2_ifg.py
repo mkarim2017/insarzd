@@ -19,6 +19,25 @@ BASE_PATH = os.path.dirname(__file__)
 
 IMG_RE=r'IMG-(\w{2})-ALOS(\d{6})(\d{4})-*'
 
+def alos2_packaging(id):
+    # create alos2 packaging
+    alos2_prod_file = "{}.nc".format(id)
+
+    with open(os.path.join(BASE_PATH, "alos2_groups.json")) as f:
+        alos2_cfg = json.load(f)
+    alos2_cfg['filename'] = alos2_prod_file
+    with open('alos2_groups.json', 'w') as f:
+        json.dump(alos2_cfg, f, indent=2, sort_keys=True)
+    alos2_cmd = [
+        "{}/alos2_packaging.py".format(BASE_PATH)
+    ]
+    alos2_cmd_line = " ".join(alos2_cmd)
+    logger.info("Calling alos2_packaging.py: {}".format(alos2_cmd_line))
+    check_call(also2_cmd_line, shell=True)
+
+    # chdir back up to work directory
+    os.chdir(cwd) # create standard product packaging
+
 def get_pol_value(pp):
     if pp in ("SV", "DV", "VV"): return "VV"
     elif pp in ("DH", "SH", "HH", "HV"): return "HH"
