@@ -8,6 +8,7 @@ from datetime import datetime
 import xml.etree.cElementTree as ET
 from xml.etree.ElementTree import Element, SubElement
 from zipfile import ZipFile
+import extract_alos2_md
 from create_input_xml import create_input_xml
 
 log_format = "[%(asctime)s: %(levelname)s/%(funcName)s] %(message)s"
@@ -345,20 +346,43 @@ def main():
     reference_slc = ctx['reference_product']
     secondary_slc = ctx['secondary_product']
     SNWE = ctx['SNWE']
+    
+    ref_data_dir = os.path.join(wd, "reference")
+    sec_data_dir = os.path.join(wd, "secondary")
 
+    os.chdir(wd)
+
+    ''' Extrach Reference SLC Metadata'''
+    ref_insar_obj = extract_alos2_md.get_alos2_obj(ref_data_dir)
+    extract_alos2_md.create_alos2_md_isce(ref_insar_obj, "ref_alos2_md.json")
+
+    ''' Extrach Reference SLC Metadata'''
+    sec_insar_obj = extract_alos2_md.get_alos2_obj(sec_data_dir)
+    extract_alos2_md.create_alos2_md_isce(sec_insar_obj, "sec_alos2_md.json")
+
+    with open("ref_alos2_md.json") as f:
+        ref_md = json.load(f)
+    
+    with open("sec_alos2_md.json") as f:
+        sec_md = json.load(f)
+
+    ref_bbox = ref_md['bbox']
+    print(ref_bbox)
+
+    sec_bbox = sec_md['bbox']
+    print(ref_bbox)
 
     #logger.info("ctx: {}".format(json.dumps(ctx, indent=2)))
 
 
+    dem_S, dem_N, dem_W, dem_E = bbox
+    dem_S = int(math.floor(dem_S))
+    dem_N = int(math.ceil(dem_N))
+    dem_W = int(math.floor(dem_W))
+    dem_E = int(math.ceil(dem_E)
 
-    min_lon = 119.25384521484376
-    max_lon = 120.58868408203126
-    min_lat = -1.2749954674414934
-    max_lat = 0.2822101626099863
-
-    SNWE = get_SNWE(min_lon, max_lon, min_lat, max_lat)
-
-    SNWE = "14 25 -109 -91"
+    #SNWE = "14 25 -109 -91"
+    SNWE = "{} {} {} {}".format(dem_S, dem_N, dem_W, dem_E)
     logging.info("SNWE : {}".format(SNWE))
     dem_xml_file_1, dem_xml_file_3 = download_dem(SNWE)
    
@@ -370,8 +394,6 @@ def main():
     ifg_type = "scansar"
     xml_file = "alos2app_scansar.xml"
     tmpl_file = "alos2app_scansar.xml.tmpl"
-    ref_data_dir = os.path.join(wd, "reference")
-    sec_data_dir = os.path.join(wd, "secondary")
     dem_file = os.path.splitext(dem_xml_file_1)[0]
     geocoded_dem_file = os.path.splitext(dem_xml_file_3)[0]
     start_subswath = 1
@@ -387,6 +409,7 @@ def main():
     '''
     Logic for Fram datas
     '''
+
 
     tmpl_file = os.path.join(BASE_PATH, "examples", "alos2", tmpl_file)
     print(tmpl_file)
