@@ -229,7 +229,7 @@ def download_dem(SNWE):
     geocode_dem_dir = os.path.join(preprocess_dem_dir, "Coarse_{}_preprocess_dem".format(dem_type_simple))
     create_dir(geocode_dem_dir)
 
-
+    '''
     os.chdir(geocode_dem_dir)
     dem_cmd = [
                 "/usr/local/isce/isce/applications/dem.py", "-a",
@@ -240,9 +240,9 @@ def download_dem(SNWE):
     dem_cmd_line = " ".join(dem_cmd)
     logging.info("Calling dem.py: {}".format(dem_cmd_line))
     check_call(dem_cmd_line, shell=True)
-
-    
     '''
+    
+    
     dem_cmd = [
         "{}/applications/downsampleDEM.py".format(os.environ['ISCE_HOME']), "-i",
         "{}".format(preprocess_vrt_file), "-rsec", "3"
@@ -251,7 +251,7 @@ def download_dem(SNWE):
     logger.info("Calling downsampleDEM.py: {}".format(dem_cmd_line))
     check_call(dem_cmd_line, shell=True)
     geocode_dem_file = ""
-    '''
+    
 
     logger.info("geocode_dem_dir : {}".format(geocode_dem_dir))
     if dem_type.startswith("SRTM"):
