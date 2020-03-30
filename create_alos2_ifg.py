@@ -17,6 +17,33 @@ logger = logging.getLogger('create_alos2_ifg.log')
 
 BASE_PATH = os.path.dirname(__file__)
 
+IMG_RE=r'IMG-(\w{2})-ALOS(\d{6})(\d{4})-*'
+
+def get_pol_value(pp):
+    if pp in ("SV", "DV", "VV"): return "VV"
+    elif pp in ("DH", "SH", "HH", "HV"): return "HH"
+    else: raise RuntimeError("Unrecognized polarization: %s" % pp)
+
+def get_pol_frame_info(slc_dir):
+    pol_arr = [] 
+    frame_arr = []
+    imgRegex = re.compile(IMG_RE)
+
+    img_files = glob(os.path.join(slc_dir, "IMG-*"))
+
+    for img_f in img_files:
+        mo = imgRegex.search(img_f)
+        pol_arr.append(get_pol_value(mo.group(1).upper()))
+        frame_arr.append(mo.group(3))
+        print("{} : {} : {}".format(img_f, mo.group(1), mo.group(3)))
+
+    pol_arr = list(set(pol_arr))
+    if len(pol_arr)>1:
+        print("Error : More than one polarization value in {} : {}".format(slc_dir, pol_arr))
+        raise Exception("More than one polarization value in {} : {}".format(slc_dir, pol_arr))
+
+    return pol_arr, list(set(frame_arr))     
+
 def fileContainsMsg(file_name, msg):
     with open(file_name, 'r') as f:
         datafile = f.readlines()
@@ -201,6 +228,21 @@ def download_dem(SNWE):
 
     geocode_dem_dir = os.path.join(preprocess_dem_dir, "Coarse_{}_preprocess_dem".format(dem_type_simple))
     create_dir(geocode_dem_dir)
+
+
+    os.chdir(geocode_dem_dir)
+    dem_cmd = [
+                "/usr/local/isce/isce/applications/dem.py", "-a",
+                "stitch", "-b", "{}".format(SNWE),
+                "-k", "-s", "3", "-f", "-c", "-n", dem_user, "-w", dem_pass,
+                "-u", dem_url
+            ]
+    dem_cmd_line = " ".join(dem_cmd)
+    logging.info("Calling dem.py: {}".format(dem_cmd_line))
+    check_call(dem_cmd_line, shell=True)
+
+    
+    '''
     dem_cmd = [
         "{}/applications/downsampleDEM.py".format(os.environ['ISCE_HOME']), "-i",
         "{}".format(preprocess_vrt_file), "-rsec", "3"
@@ -209,6 +251,7 @@ def download_dem(SNWE):
     logger.info("Calling downsampleDEM.py: {}".format(dem_cmd_line))
     check_call(dem_cmd_line, shell=True)
     geocode_dem_file = ""
+    '''
 
     logger.info("geocode_dem_dir : {}".format(geocode_dem_dir))
     if dem_type.startswith("SRTM"):
@@ -250,18 +293,6 @@ def download_dem(SNWE):
 
     #os.chdir(geocode_dem_dir)
 
-    cmd= ["pwd"]
-    cmd_line = " ".join(cmd)
-    check_call(cmd_line, shell=True)
-    dem_cmd = [
-        "/usr/local/isce/isce/applications/downsampleDEM.py", "-i",
-        "{}".format(preprocess_vrt_file), "-rsec", "3"
-    ]
-    dem_cmd_line = " ".join(dem_cmd)
-    logger.info("Calling downsampleDEM.py: {}".format(dem_cmd_line))
-    check_call(dem_cmd_line, shell=True)
-    geocode_dem_file = ""
-
     logger.info("geocode_dem_dir : {}".format(geocode_dem_dir))
     geocode_dem_file = glob(os.path.join(geocode_dem_dir, "*.dem.wgs84"))[0]
     logger.info("Using Geocode DEM file: {}".format(geocode_dem_file))
@@ -293,8 +324,7 @@ def download_dem(SNWE):
     '''
 
     geocode_dem_xml = glob(os.path.join(geocode_dem_dir, "*.dem.wgs84.xml"))[0]
-    logging.info("geocode_dem_xml : {}".format(geocode_dem_xml))
-    updateXml(geocode_dem_xml)
+
 
     os.chdir(wd)
     cmd= ["pwd"]
@@ -327,9 +357,9 @@ def main():
     os.chdir(wd)
     cmd= ["pwd"]
     run_command(cmd)
-
-   ''' Get the informations from _context file '''
-   ctx_file = os.path.abspath('_context.json')
+    
+    ''' Get the informations from _context file '''
+    ctx_file = os.path.abspath('_context.json')
     if not os.path.exists(ctx_file):
         raise RuntimeError("Failed to find _context.json.")
     with open(ctx_file) as f:
@@ -339,10 +369,10 @@ def main():
     complete_start_time=datetime.now()
     logger.info("Alos2 start Time : {}".format(complete_start_time))
 
-   dem_type = ctx['dem_type']
-   reference_slc = ctx['reference_product']
-   secondary_slc = ctx['secondary_product']
-   SNWE = ctx['SNWE']
+    dem_type = ctx['dem_type']
+    reference_slc = ctx['reference_product']
+    secondary_slc = ctx['secondary_product']
+    SNWE = ctx['SNWE']
 
 
     #logger.info("ctx: {}".format(json.dumps(ctx, indent=2)))
@@ -374,8 +404,20 @@ def main():
     start_subswath = 1
     end_subswath = 5
     burst_overlap = 85.0
-    
-    create_input_xml(os.path.join(BASE_PATH, tmpl_file), xml_file,
+   
+    ref_pol, ref_frame_arr = get_pol_frame_info(ref_data_dir)
+    sec_pol, sec_frame_arr = get_pol_frame_info(sec_data_dir)
+
+    if ref_pol != sec_pol:
+        raise Exception("REF Pol : {} is different than SEC Pol : {}".format(ref_pol, sec_pol))
+
+    '''
+    Logic for Fram datas
+    '''
+
+    tmpl_file = os.path.join(BASE_PATH, "examples", "alos2", tmpl_file)
+    print(tmpl_file)
+    create_input_xml(tmpl_file, xml_file,
                      str(ref_data_dir), str(sec_data_dir),
                      str(dem_file), str(geocoded_dem_file), start_subswath, end_subswath, burst_overlap)
 
