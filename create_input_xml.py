@@ -4,7 +4,8 @@ from string import Template
 
 
 def create_input_xml(tmpl_file, xml_file, reference_data_dir, secondary_data_dir,
-                     dem_file, geocoded_dem_file,  start_swathnum, end_swathnum, burst_overlap):
+                     dem_file, geocoded_dem_file,  start_swathnum, end_swathnum, burst_overlap,
+                     ref_pol, ref_frame_arr, sec_pol, sec_frame_arr, bbox):
     with open(tmpl_file) as f:
         tmpl = Template(f.read())
     with open(xml_file, 'w') as f:
@@ -14,7 +15,12 @@ def create_input_xml(tmpl_file, xml_file, reference_data_dir, secondary_data_dir
                                      GEOCODED_DEM_FILE=geocoded_dem_file,
                                      START_SUBSWATH=start_swathnum,
                                      END_SUBSWATH=end_swathnum,
-                                     BURST_OVERLAP=burst_overlap))
+                                     BURST_OVERLAP=burst_overlap,
+                                     REF_POL=ref_pol,
+                                     REF_FRAME=ref_frame_arr,
+                                     SEC_POL=sec_pol,
+                                     SEC_FRAME=sec_frame_arr,
+                                     BBOX=bbox))
                                      
 
 def main():
@@ -29,7 +35,12 @@ def main():
     start_swathnum = sys.argv[7]
     end_swathnum = sys.argv[8]
     burst_overlap = sys.argv[9]
-    print(end_swathnum)
+    ref_pol = sys.argv[10]
+    ref_frame_arr = sys.argv[11]
+    sec_pol = sys.argv[12]
+    sec_frame_arr = sys.argv[13]
+    bbox = sys.argv[14].split(' ')
+    print(bbox)
     print(tmpl_file)
     '''
     azimuth_looks = sys.argv[11]
@@ -41,7 +52,8 @@ def main():
     esd_coherence_threshold = sys.argv[17]
     '''
     create_input_xml(tmpl_file, xml_file, reference_data_dir, secondary_data_dir,
-                     dem_file, geocoded_dem_file,  start_swathnum, end_swathnum, burst_overlap)
+                     dem_file, geocoded_dem_file,  start_swathnum, end_swathnum, burst_overlap,
+                     ref_pol, ref_frame_arr, sec_pol, sec_frame_arr, bbox)
 
     # get metadata
     if not os.path.exists(xml_file):

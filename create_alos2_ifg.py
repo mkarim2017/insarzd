@@ -57,7 +57,7 @@ def get_pol_frame_info(slc_dir):
     for img_f in img_files:
         mo = imgRegex.search(img_f)
         pol_arr.append(get_pol_value(mo.group(1).upper()))
-        frame_arr.append(mo.group(3))
+        frame_arr.append(int(mo.group(3)))
         print("{} : {} : {}".format(img_f, mo.group(1), mo.group(3)))
 
     pol_arr = list(set(pol_arr))
@@ -65,7 +65,7 @@ def get_pol_frame_info(slc_dir):
         print("Error : More than one polarization value in {} : {}".format(slc_dir, pol_arr))
         raise Exception("More than one polarization value in {} : {}".format(slc_dir, pol_arr))
 
-    return pol_arr, list(set(frame_arr))     
+    return pol_arr[0], list(set(frame_arr))     
 
 def fileContainsMsg(file_name, msg):
     with open(file_name, 'r') as f:
@@ -122,6 +122,7 @@ def get_SNWE_bbox(bbox):
     return get_SNWE(min(lons), max(lons), min(lats), max(lats))
 
 def get_SNWE(min_lon, max_lon, min_lat, max_lat):
+    snwe_arr = []
     dem_S = min_lat
     dem_N = max_lat
     dem_W = min_lon
@@ -132,7 +133,12 @@ def get_SNWE(min_lon, max_lon, min_lat, max_lat):
     dem_W = int(math.floor(dem_W))
     dem_E = int(math.ceil(dem_E))
 
-    return "{} {} {} {}".format(dem_S, dem_N, dem_W, dem_E)
+    snwe_arr.append(dem_S)
+    snwe_arr.append(dem_N)
+    snwe_arr.append(dem_W)
+    snwe_arr.append(dem_E)
+
+    return "{} {} {} {}".format(dem_S, dem_N, dem_W, dem_E), snwe_arr
 
 def run_command(cmd):
     cmd_line = " ".join(cmd)
@@ -314,7 +320,7 @@ def download_dem(SNWE):
     cmd_line = " ".join(cmd)
     check_call(cmd_line, shell=True)
 
-    return preprocess_dem_xml, geocode_dem_xml
+    return preprocess_dem_file, geocode_dem_file, preprocess_dem_xml, geocode_dem_xml
 
 def unzip_slcs(slcs):
     for k, v in slcs.items():
@@ -379,10 +385,12 @@ def main():
         sec_md = json.load(f)
 
     ref_bbox = ref_md['geometry']['coordinates'][0]
-    SNWE = get_SNWE_bbox(ref_bbox)
+    SNWE, snwe_arr = get_SNWE_bbox(ref_bbox)
     #SNWE = "14 25 -109 -91"
+    logging.info("snwe_arr : {}".format(snwe_arr))
     logging.info("SNWE : {}".format(SNWE))
-    dem_xml_file_1, dem_xml_file_3 = download_dem(SNWE)
+    
+    preprocess_dem_file, geocode_dem_file, preprocess_dem_xml, geocode_dem_xml = download_dem(SNWE)
    
     ''' This is already done, so commenting it for now 
     slcs = {"reference" : "0000230036_001001_ALOS2227337160-180808.zip", "secondary" : "0000230039_001001_ALOS2235617160-181003.zip"}
@@ -392,8 +400,6 @@ def main():
     ifg_type = "scansar"
     xml_file = "alos2app_scansar.xml"
     tmpl_file = "alos2app_scansar.xml.tmpl"
-    dem_file = os.path.splitext(dem_xml_file_1)[0]
-    geocoded_dem_file = os.path.splitext(dem_xml_file_3)[0]
     start_subswath = 1
     end_subswath = 5
     burst_overlap = 85.0
@@ -409,11 +415,12 @@ def main():
     '''
 
 
-    tmpl_file = os.path.join(BASE_PATH, "examples", "alos2", tmpl_file)
+    tmpl_file = os.path.join(BASE_PATH, tmpl_file)
     print(tmpl_file)
     create_input_xml(tmpl_file, xml_file,
                      str(ref_data_dir), str(sec_data_dir),
-                     str(dem_file), str(geocoded_dem_file), start_subswath, end_subswath, burst_overlap)
+                     str(preprocess_dem_file), str(geocode_dem_file), start_subswath, end_subswath, burst_overlap,
+                     str(ref_pol), str(ref_frame_arr), str(sec_pol), str(sec_frame_arr), snwe_arr)
 
 
     alos2_start_time=datetime.now()
