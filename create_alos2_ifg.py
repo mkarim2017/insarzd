@@ -19,6 +19,9 @@ BASE_PATH = os.path.dirname(__file__)
 
 IMG_RE=r'IMG-(\w{2})-ALOS(\d{6})(\d{4})-*'
 
+def create_product(id):
+    pass
+
 def alos2_packaging(id):
     # create alos2 packaging
     alos2_prod_file = "{}.nc".format(id)
@@ -364,6 +367,7 @@ def main():
     unzip_slcs(slcs)
     '''
 
+    ifg_type = "scansar"
     xml_file = "alos2app_scansar.xml"
     tmpl_file = "alos2app_scansar.xml.tmpl"
     ref_data_dir = os.path.join(wd, "reference")
@@ -403,7 +407,12 @@ def main():
     cmd = ["python3", "{}/scripts/alos2app.py".format(BASE_PATH), "-i", "{}".format(xml_file), "-s", "filter"]
     run_command(cmd)
 
+    dt_string = datetime.now().strftime("%d%m%YT%H%M%S")
+    id = "ALOS2_{}_{}".format(dem_type, dt_string)
 
+    create_product(id)
+    
+    alos2_packaging(id)
 
 
 if __name__ == '__main__':
