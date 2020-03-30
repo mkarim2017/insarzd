@@ -272,56 +272,6 @@ def download_dem(SNWE):
     check_call(fix_cmd_line, shell=True)
 
 
-    '''
-    dem_xml_file_1 = os.path.join(wd, glob("*.dem.wgs84.xml")[0])
-    logging.info("dem_xml_file_1 : {}".format(dem_xml_file_1))
-    updateXml(dem_xml_file_1)
-
-    preprocess_dem_dir = wd
-    preprocess_vrt_file = glob(os.path.join(preprocess_dem_dir, "*.dem.wgs84.vrt"))[0]
-
-    if not os.path.isfile(preprocess_vrt_file):
-        logger.info("%s does not exists. Exiting")
-    
-
-    cmd= ["mkdir", "3"]
-    cmd_line = " ".join(cmd)
-    check_call(cmd_line, shell=True)
-    new_dir = os.path.join(wd, "3")
-
-    geocode_dem_dir=os.path.join(wd, "3")
-
-    #os.chdir(geocode_dem_dir)
-
-    logger.info("geocode_dem_dir : {}".format(geocode_dem_dir))
-    geocode_dem_file = glob(os.path.join(geocode_dem_dir, "*.dem.wgs84"))[0]
-    logger.info("Using Geocode DEM file: {}".format(geocode_dem_file))
-
-    checkBurstError()
-
-    # fix file path in Geocoding DEM xml
-    fix_cmd = [
-        "/usr/local/isce/isce/applications/fixImageXml.py",
-        "-i", geocode_dem_file, "--full"
-    ]
-    fix_cmd_line = " ".join(fix_cmd)
-    logger.info("Calling fixImageXml.py: {}".format(fix_cmd_line))
-    check_call(fix_cmd_line, shell=True)
-
-    
-    dem_cmd = [
-                "/usr/local/isce/isce/applications/dem.py", "-a",
-                "stitch", "-b", "{}".format(SNWE),
-                "-k", "-s", "3", "-f", "-c", "-n", dem_user, "-w", dem_pass,
-                "-u", dem_url
-            ]
-    dem_cmd_line = " ".join(dem_cmd)
-    logging.info("Calling dem.py: {}".format(dem_cmd_line))
-    check_call(dem_cmd_line, shell=True)
-
-    #cmd= "rm *.zip *.log *.dem *.dem.vrt *.dem.xml"
-    #check_call(cmd, shell=True)
-    '''
 
     geocode_dem_xml = glob(os.path.join(geocode_dem_dir, "*.dem.wgs84.xml"))[0]
 
